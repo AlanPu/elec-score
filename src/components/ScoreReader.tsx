@@ -314,7 +314,7 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
       {/* 小节高亮显示 */}
       <MeasureHighlight
         currentMeasureInPage={autoPageTurn.currentMeasureInPage}
-        measuresPerPage={autoPageTurn.measuresPerPage}
+        measuresPerPage={autoPageTurn.getMeasuresForPage(autoPageTurn.currentPage)}
         pageWidth={canvasSize.width}
         pageHeight={canvasSize.height}
         isRunning={autoPageTurn.isRunning}
@@ -354,12 +354,17 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
         measuresPerPage={autoPageTurn.measuresPerPage}
         beatsPerMeasure={autoPageTurn.beatsPerMeasure}
         speedPreset={autoPageTurn.speedPreset}
+        measuresPerPageMap={autoPageTurn.measuresPerPageMap}
+        totalPages={score.pageCount}
+        getMeasuresForPage={autoPageTurn.getMeasuresForPage}
         setPageTurnMode={autoPageTurn.setPageTurnMode}
         setTimeInterval={autoPageTurn.setTimeInterval}
         setBpm={autoPageTurn.setBpm}
         setMeasuresPerPage={autoPageTurn.setMeasuresPerPage}
         setBeatsPerMeasure={autoPageTurn.setBeatsPerMeasure}
         setSpeedPreset={autoPageTurn.setSpeedPreset}
+        setMeasuresForPage={autoPageTurn.setMeasuresForPage}
+        removeMeasuresForPage={autoPageTurn.removeMeasuresForPage}
       />
 
       {/* 翻页控制 */}

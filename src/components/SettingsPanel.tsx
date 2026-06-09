@@ -13,12 +13,17 @@ interface SettingsPanelProps {
   measuresPerPage: number;
   beatsPerMeasure: number;
   speedPreset: SpeedPreset;
+  measuresPerPageMap: Record<number, number>;
+  totalPages: number;
+  getMeasuresForPage: (pageIndex: number) => number;
   setPageTurnMode: (mode: PageTurnMode) => void;
   setTimeInterval: (val: number) => void;
   setBpm: (val: number) => void;
   setMeasuresPerPage: (val: number) => void;
   setBeatsPerMeasure: (val: number) => void;
   setSpeedPreset: (val: SpeedPreset) => void;
+  setMeasuresForPage: (page: number, value: number) => void;
+  removeMeasuresForPage: (page: number) => void;
 }
 
 const panelStyles: Record<string, React.CSSProperties> = {
@@ -116,6 +121,65 @@ const panelStyles: Record<string, React.CSSProperties> = {
     gap: '4px',
     marginBottom: '8px',
   },
+  toggleButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 0',
+    border: 'none',
+    background: 'none',
+    color: 'var(--color-accent, #4a90d9)',
+    fontSize: '12px',
+    cursor: 'pointer',
+  },
+  pageList: {
+    maxHeight: '200px',
+    overflowY: 'auto',
+    marginTop: '8px',
+    paddingRight: '4px',
+  },
+  pageRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '6px',
+  },
+  pageLabel: {
+    fontSize: '12px',
+    color: 'rgba(255,255,255,0.7)',
+    minWidth: '48px',
+    flexShrink: 0,
+  },
+  pageInput: {
+    width: '56px',
+    padding: '3px 6px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '4px',
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    color: '#fff',
+    fontSize: '12px',
+    textAlign: 'right' as const,
+    outline: 'none',
+  },
+  pageInputCustom: {
+    border: '1px solid var(--color-accent, #4a90d9)',
+    backgroundColor: 'rgba(74, 144, 217, 0.15)',
+  },
+  resetButton: {
+    padding: '2px 6px',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '4px',
+    backgroundColor: 'transparent',
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: '10px',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  defaultValueHint: {
+    fontSize: '10px',
+    color: 'rgba(255,255,255,0.35)',
+    flexShrink: 0,
+  },
 };
 
 export default function SettingsPanel({
@@ -125,14 +189,20 @@ export default function SettingsPanel({
   measuresPerPage,
   beatsPerMeasure,
   speedPreset,
+  measuresPerPageMap,
+  totalPages,
+  getMeasuresForPage,
   setPageTurnMode,
   setTimeInterval,
   setBpm,
   setMeasuresPerPage,
   setBeatsPerMeasure,
   setSpeedPreset,
+  setMeasuresForPage,
+  removeMeasuresForPage,
 }: SettingsPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showPerPageSettings, setShowPerPageSettings] = useState(false);
 
   return (
     <>
@@ -216,6 +286,51 @@ export default function SettingsPanel({
                   style={panelStyles.input}
                 />
               </div>
+
+              {/* 自定义各页小节数 */}
+              <button
+                style={panelStyles.toggleButton}
+                onClick={() => setShowPerPageSettings(!showPerPageSettings)}
+              >
+                <span>{showPerPageSettings ? '▼' : '▶'}</span>
+                <span>自定义各页小节数</span>
+              </button>
+              {showPerPageSettings && (
+                <div style={panelStyles.pageList}>
+                  {Array.from({ length: totalPages }, (_, i) => {
+                    const isCustom = i in measuresPerPageMap;
+                    const value = getMeasuresForPage(i);
+                    return (
+                      <div key={i} style={panelStyles.pageRow}>
+                        <span style={panelStyles.pageLabel}>第 {i + 1} 页</span>
+                        <input
+                          type="number"
+                          min={1}
+                          max={20}
+                          value={value}
+                          placeholder={isCustom ? undefined : String(measuresPerPage)}
+                          onChange={(e) => setMeasuresForPage(i, Number(e.target.value))}
+                          style={{
+                            ...panelStyles.pageInput,
+                            ...(isCustom ? panelStyles.pageInputCustom : {}),
+                          }}
+                        />
+                        {isCustom ? (
+                          <button
+                            style={panelStyles.resetButton}
+                            onClick={() => removeMeasuresForPage(i)}
+                            title="恢复默认"
+                          >
+                            重置
+                          </button>
+                        ) : (
+                          <span style={panelStyles.defaultValueHint}>默认</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </>
           )}
 
