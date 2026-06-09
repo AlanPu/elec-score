@@ -7,6 +7,7 @@ import { useAutoPageTurn } from '../hooks/useAutoPageTurn';
 import PageControls from './PageControls';
 import ProgressDisplay from './ProgressDisplay';
 import SettingsPanel from './SettingsPanel';
+import MeasureHighlight from './MeasureHighlight';
 
 interface ScoreReaderProps {
   score: ScoreMeta;
@@ -20,6 +21,7 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
   const [loading, setLoading] = useState(true);
   const [scale, setScale] = useState(1);
   const scaleRef = useRef(1);
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   // 拖动/平移状态
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -52,6 +54,12 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
     canvas.height = Math.floor(viewport.height * dpr);
     canvas.style.width = `${Math.floor(viewport.width)}px`;
     canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+    // 更新 Canvas 尺寸状态
+    setCanvasSize({
+      width: Math.floor(viewport.width),
+      height: Math.floor(viewport.height),
+    });
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -303,6 +311,16 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
         }}
       />
 
+      {/* 小节高亮显示 */}
+      <MeasureHighlight
+        currentMeasureInPage={autoPageTurn.currentMeasureInPage}
+        measuresPerPage={autoPageTurn.measuresPerPage}
+        pageWidth={canvasSize.width}
+        pageHeight={canvasSize.height}
+        isRunning={autoPageTurn.isRunning}
+        offset={offset}
+      />
+
       {/* 返回按钮 */}
       <button
         style={{
@@ -361,6 +379,8 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
       <ProgressDisplay
         currentPage={autoPageTurn.currentPage}
         totalPages={score.pageCount}
+        currentMeasure={autoPageTurn.currentMeasure}
+        totalMeasures={autoPageTurn.totalMeasures}
       />
     </div>
   );

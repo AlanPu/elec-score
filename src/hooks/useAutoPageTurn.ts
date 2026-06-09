@@ -20,6 +20,7 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
   const [beatsPerMeasure, setBeatsPerMeasure] = useState(4);
   const [speedPreset, setSpeedPreset] = useState<SpeedPreset>(SpeedPreset.Medium);
   const [remainingSeconds, setRemainingSeconds] = useState(30);
+  const [currentMeasureInPage, setCurrentMeasureInPage] = useState(0);
 
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const turnPageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -73,6 +74,16 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
         setRemainingSeconds((prev) => {
           const next = Math.max(0, prev - 1);
           remainingRef.current = next;
+
+          // 计算当前小节
+          const elapsed = interval - next;
+          const pageProgress = elapsed / interval; // 0-1
+          const measure = Math.min(
+            Math.floor(pageProgress * measuresPerPage),
+            measuresPerPage - 1
+          );
+          setCurrentMeasureInPage(measure);
+
           return next;
         });
       }, 1000);
@@ -91,6 +102,7 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
 
         setCurrentPage(nextPage);
         currentPageRef.current = nextPage;
+        setCurrentMeasureInPage(0); // 翻页时重置小节
         onTurnPage(nextPage);
 
         // 安排下一次翻页
@@ -127,6 +139,17 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
         setRemainingSeconds((prev) => {
           const next = Math.max(0, prev - 1);
           remainingRef.current = next;
+
+          // 计算当前小节
+          const interval = computedInterval();
+          const elapsed = interval - next;
+          const pageProgress = elapsed / interval; // 0-1
+          const measure = Math.min(
+            Math.floor(pageProgress * measuresPerPage),
+            measuresPerPage - 1
+          );
+          setCurrentMeasureInPage(measure);
+
           return next;
         });
       }, 1000);
@@ -140,17 +163,19 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
         }
         setCurrentPage(nextPage);
         currentPageRef.current = nextPage;
+        setCurrentMeasureInPage(0); // 翻页时重置小节
         onTurnPage(nextPage);
         scheduleNextTurn(computedInterval());
       }, remaining * 1000);
     }
-  }, [totalPages, computedInterval, scheduleNextTurn, clearTimers, onTurnPage]);
+  }, [totalPages, computedInterval, scheduleNextTurn, clearTimers, onTurnPage, measuresPerPage]);
 
   const reset = useCallback(() => {
     clearTimers();
     setIsRunning(false);
     setCurrentPage(0);
     currentPageRef.current = 0;
+    setCurrentMeasureInPage(0); // 重置小节
     setRemainingSeconds(computedInterval());
     onTurnPage(0);
   }, [clearTimers, computedInterval, onTurnPage]);
@@ -160,6 +185,7 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
       const nextPage = currentPageRef.current + 1;
       setCurrentPage(nextPage);
       currentPageRef.current = nextPage;
+      setCurrentMeasureInPage(0); // 翻页时重置小节
       onTurnPage(nextPage);
       // 如果正在运行，重新开始计时
       if (isRunningRef.current) {
@@ -173,6 +199,7 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
       const prevPage = currentPageRef.current - 1;
       setCurrentPage(prevPage);
       currentPageRef.current = prevPage;
+      setCurrentMeasureInPage(0); // 翻页时重置小节
       onTurnPage(prevPage);
       if (isRunningRef.current) {
         scheduleNextTurn(computedInterval());
@@ -184,6 +211,7 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
     (page: number) => {
       setCurrentPage(page);
       currentPageRef.current = page;
+      setCurrentMeasureInPage(0); // 翻页时重置小节
       if (isRunningRef.current) {
         scheduleNextTurn(computedInterval());
       }
@@ -198,6 +226,10 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
     };
   }, [clearTimers]);
 
+  // 计算全局小节编号
+  const currentMeasure = currentPage * measuresPerPage + currentMeasureInPage;
+  const totalMeasures = totalPages * measuresPerPage;
+
   return {
     currentPage,
     isRunning,
@@ -208,6 +240,9 @@ export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptio
     beatsPerMeasure,
     speedPreset,
     remainingSeconds,
+    currentMeasure,
+    currentMeasureInPage,
+    totalMeasures,
     setPageTurnMode,
     setTimeInterval,
     setBpm,

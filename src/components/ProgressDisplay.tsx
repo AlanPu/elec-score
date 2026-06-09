@@ -1,6 +1,8 @@
 interface ProgressDisplayProps {
   currentPage: number;
   totalPages: number;
+  currentMeasure?: number;
+  totalMeasures?: number;
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -34,11 +36,22 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
-export default function ProgressDisplay({ currentPage, totalPages }: ProgressDisplayProps) {
+export default function ProgressDisplay({
+  currentPage,
+  totalPages,
+  currentMeasure,
+  totalMeasures,
+}: ProgressDisplayProps) {
   const progress = totalPages > 1 ? ((currentPage + 1) / totalPages) * 100 : 100;
 
   return (
     <div style={styles.container}>
+      {/* 小节进度显示 */}
+      {currentMeasure !== undefined && totalMeasures !== undefined && (
+        <span style={{ ...styles.text, marginBottom: '8px' }}>
+          第 {currentMeasure + 1} 小节 / 共 {totalMeasures} 小节
+        </span>
+      )}
       <span style={styles.text}>
         {currentPage + 1} / {totalPages}
       </span>
