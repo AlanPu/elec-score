@@ -1,0 +1,50 @@
+:root {
+  --color-accent: #4a90d9;
+  --color-accent-hover: #3a7bc8;
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-bg: #f5f5f7;
+  --color-card-bg: #ffffff;
+  --color-border: #e5e7eb;
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-accent: #5b9fe6;
+    --color-accent-hover: #4a8fd4;
+    --color-text-primary: #f3f4f6;
+    --color-text-secondary: #9ca3af;
+    --color-bg: #111827;
+    --color-card-bg: #1f2937;
+    --color-border: #374151;
+    --color-danger: #f87171;
+    --color-danger-hover: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
