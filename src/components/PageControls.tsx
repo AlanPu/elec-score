@@ -10,6 +10,7 @@ interface PageControlsProps {
   onReset: () => void;
   onPrev: () => void;
   onNext: () => void;
+  onStartWakeLock?: () => void;
 }
 
 const AUTO_HIDE_DELAY = 3000;
@@ -24,6 +25,7 @@ export default function PageControls({
   onReset,
   onPrev,
   onNext,
+  onStartWakeLock,
 }: PageControlsProps) {
   const [visible, setVisible] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -57,8 +59,10 @@ export default function PageControls({
       onPause();
     } else if (currentPage > 0) {
       onResume();
+      onStartWakeLock?.();
     } else {
       onStart();
+      onStartWakeLock?.();
     }
   };
 

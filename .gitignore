@@ -33,3 +33,6 @@ dist-ssr
 
 # OS
 Thumbs.db
+
+# Docker images
+elec-score.tar

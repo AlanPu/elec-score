@@ -4,6 +4,7 @@ import type { ScoreMeta } from '../types/score';
 import { loadPdfFromBase64 } from '../utils/pdfImporter';
 import { loadPdfData } from '../utils/storage';
 import { useAutoPageTurn } from '../hooks/useAutoPageTurn';
+import { useScreenWakeLock } from '../hooks/useScreenWakeLock';
 import PageControls from './PageControls';
 import ProgressDisplay from './ProgressDisplay';
 import SettingsPanel from './SettingsPanel';
@@ -22,6 +23,8 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
   const [scale, setScale] = useState(1);
   const scaleRef = useRef(1);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+
+  const { request: requestWakeLock, release: releaseWakeLock } = useScreenWakeLock();
 
   // 拖动/平移状态
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -117,6 +120,13 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [pdfDoc, autoPageTurn.currentPage, renderPage]);
+
+  // 播放状态停止时释放屏幕唤醒锁
+  useEffect(() => {
+    if (!autoPageTurn.isRunning) {
+      releaseWakeLock();
+    }
+  }, [autoPageTurn.isRunning, releaseWakeLock]);
 
   // 键盘翻页
   useEffect(() => {
@@ -370,6 +380,7 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
         onReset={autoPageTurn.reset}
         onPrev={autoPageTurn.goToPreviousPage}
         onNext={autoPageTurn.goToNextPage}
+        onStartWakeLock={requestWakeLock}
       />
 
       {/* 进度显示 */}
