@@ -26,11 +26,35 @@ npm install
 # 启动开发服务器
 npm run dev
 
+# 启动开发服务器（暴露到局域网，允许其他设备访问）
+npm run dev -- --host
+
 # 构建生产版本
 npm run build
 
 # 预览生产版本
 npm run preview
+
+# 预览生产版本（暴露到局域网）
+npm run preview -- --host
+```
+
+## 服务管理
+
+### 查找并停止服务
+
+```bash
+# 查找占用 5173 端口（开发服务器）的进程
+lsof -ti:5173
+
+# 查找占用 4173 端口（预览服务器）的进程
+lsof -ti:4173
+
+# 停止开发服务器
+kill $(lsof -ti:5173)
+
+# 停止预览服务器
+kill $(lsof -ti:4173)
 ```
 
 ## React Compiler

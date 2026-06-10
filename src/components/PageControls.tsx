@@ -26,7 +26,7 @@ export default function PageControls({
   onNext,
 }: PageControlsProps) {
   const [visible, setVisible] = useState(true);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const resetTimer = () => {
     setVisible(true);

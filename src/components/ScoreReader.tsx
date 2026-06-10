@@ -65,7 +65,7 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport, canvas }).promise;
   }, [pdfDoc]);
 
   // 自动翻页 Hook
@@ -131,14 +131,6 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [autoPageTurn.goToPreviousPage, autoPageTurn.goToNextPage]);
 
-  // 缩放时重置偏移
-  const handleScaleChange = useCallback((newScale: number) => {
-    scaleRef.current = newScale;
-    setScale(newScale);
-    // 缩放时重置偏移，避免内容跑出视口
-    offsetRef.current = { x: 0, y: 0 };
-    setOffset({ x: 0, y: 0 });
-  }, []);
 
   // 缩放：Ctrl + 滚轮
   useEffect(() => {
