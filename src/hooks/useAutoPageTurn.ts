@@ -3,30 +3,25 @@ import {
   PageTurnMode,
   SpeedPreset,
   SPEED_PRESET_INTERVALS,
-  DEFAULT_SCORE_SETTINGS,
 } from '../types/score';
-import type { ScoreSettings } from '../types/score';
-import { loadScoreSettings, saveScoreSettings } from '../utils/storage';
 
 interface UseAutoPageTurnOptions {
-  scoreId: string;
   totalPages: number;
   onTurnPage: (page: number) => void;
 }
 
-export function useAutoPageTurn({ scoreId, totalPages, onTurnPage }: UseAutoPageTurnOptions) {
+export function useAutoPageTurn({ totalPages, onTurnPage }: UseAutoPageTurnOptions) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [pageTurnMode, setPageTurnModeState] = useState<PageTurnMode>(DEFAULT_SCORE_SETTINGS.pageTurnMode);
-  const [timeInterval, setTimeIntervalState] = useState(DEFAULT_SCORE_SETTINGS.timeInterval);
-  const [bpm, setBpmState] = useState(DEFAULT_SCORE_SETTINGS.bpm);
-  const [measuresPerPage, setMeasuresPerPageState] = useState(DEFAULT_SCORE_SETTINGS.measuresPerPage);
-  const [beatsPerMeasure, setBeatsPerMeasureState] = useState(DEFAULT_SCORE_SETTINGS.beatsPerMeasure);
-  const [speedPreset, setSpeedPresetState] = useState<SpeedPreset>(DEFAULT_SCORE_SETTINGS.speedPreset);
-  const [remainingSeconds, setRemainingSeconds] = useState(DEFAULT_SCORE_SETTINGS.timeInterval);
+  const [pageTurnMode, setPageTurnMode] = useState<PageTurnMode>(PageTurnMode.Time);
+  const [timeInterval, setTimeInterval] = useState(30);
+  const [bpm, setBpm] = useState(120);
+  const [measuresPerPage, setMeasuresPerPage] = useState(4);
+  const [beatsPerMeasure, setBeatsPerMeasure] = useState(4);
+  const [speedPreset, setSpeedPreset] = useState<SpeedPreset>(SpeedPreset.Medium);
+  const [remainingSeconds, setRemainingSeconds] = useState(30);
   const [currentMeasureInPage, setCurrentMeasureInPage] = useState(0);
-  const [measuresPerPageMap, setMeasuresPerPageMap] = useState<Record<number, number>>(DEFAULT_SCORE_SETTINGS.measuresPerPageMap);
-  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [measuresPerPageMap, setMeasuresPerPageMap] = useState<Record<number, number>>({});
 
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const turnPageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -38,78 +33,6 @@ export function useAutoPageTurn({ scoreId, totalPages, onTurnPage }: UseAutoPage
   const bpmRef = useRef(bpm);
   const beatsPerMeasureRef = useRef(beatsPerMeasure);
   const pageTurnModeRef = useRef(pageTurnMode);
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // 从服务端/localStorage 加载设置
-  useEffect(() => {
-    let cancelled = false;
-    loadScoreSettings(scoreId).then((settings) => {
-      if (cancelled) return;
-      setPageTurnModeState(settings.pageTurnMode);
-      setTimeIntervalState(settings.timeInterval);
-      setBpmState(settings.bpm);
-      setMeasuresPerPageState(settings.measuresPerPage);
-      setBeatsPerMeasureState(settings.beatsPerMeasure);
-      setSpeedPresetState(settings.speedPreset);
-      setMeasuresPerPageMap(settings.measuresPerPageMap);
-      setRemainingSeconds(settings.timeInterval);
-      setSettingsLoaded(true);
-    });
-    return () => { cancelled = true; };
-  }, [scoreId]);
-
-  // 收集当前设置
-  const getCurrentSettings = useCallback((): ScoreSettings => ({
-    pageTurnMode,
-    timeInterval,
-    bpm,
-    measuresPerPage,
-    beatsPerMeasure,
-    speedPreset,
-    measuresPerPageMap,
-  }), [pageTurnMode, timeInterval, bpm, measuresPerPage, beatsPerMeasure, speedPreset, measuresPerPageMap]);
-
-  // 防抖保存设置
-  const debouncedSave = useCallback(() => {
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-    }
-    saveTimerRef.current = setTimeout(() => {
-      saveScoreSettings(scoreId, getCurrentSettings());
-    }, 500);
-  }, [scoreId, getCurrentSettings]);
-
-  // 设置变更时自动保存
-  useEffect(() => {
-    if (!settingsLoaded) return;
-    debouncedSave();
-  }, [pageTurnMode, timeInterval, bpm, measuresPerPage, beatsPerMeasure, speedPreset, measuresPerPageMap, settingsLoaded, debouncedSave]);
-
-  // 包装 setter，触发保存
-  const setPageTurnMode = useCallback((mode: PageTurnMode) => {
-    setPageTurnModeState(mode);
-    pageTurnModeRef.current = mode;
-  }, []);
-
-  const setTimeInterval = useCallback((val: number) => {
-    setTimeIntervalState(val);
-  }, []);
-
-  const setBpm = useCallback((val: number) => {
-    setBpmState(val);
-  }, []);
-
-  const setMeasuresPerPage = useCallback((val: number) => {
-    setMeasuresPerPageState(val);
-  }, []);
-
-  const setBeatsPerMeasure = useCallback((val: number) => {
-    setBeatsPerMeasureState(val);
-  }, []);
-
-  const setSpeedPreset = useCallback((preset: SpeedPreset) => {
-    setSpeedPresetState(preset);
-  }, []);
 
   // 获取指定页的小节数（优先自定义，否则用默认值）
   const getMeasuresForPage = useCallback((pageIndex: number): number => {
@@ -353,9 +276,6 @@ export function useAutoPageTurn({ scoreId, totalPages, onTurnPage }: UseAutoPage
   useEffect(() => {
     return () => {
       clearTimers();
-      if (saveTimerRef.current) {
-        clearTimeout(saveTimerRef.current);
-      }
     };
   }, [clearTimers]);
 

@@ -1,61 +1,15 @@
+<<<<<<< HEAD
 # elec-score
+乐谱翻页器
+=======
+# React + TypeScript + Vite
 
-电子乐谱阅读器 - 一个基于 React + TypeScript + Vite 构建的乐谱翻页应用
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 功能特性
+Currently, two official plugins are available:
 
-- PDF 乐谱导入和显示
-- 乐谱库管理
-- 自动翻页功能
-- 进度显示
-- 设置面板
-
-## 技术栈
-
-- React 19
-- TypeScript
-- Vite
-- PDF.js
-
-## 开发
-
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 启动开发服务器（暴露到局域网，允许其他设备访问）
-npm run dev -- --host
-
-# 构建生产版本
-npm run build
-
-# 预览生产版本
-npm run preview
-
-# 预览生产版本（暴露到局域网）
-npm run preview -- --host
-```
-
-## 服务管理
-
-### 查找并停止服务
-
-```bash
-# 查找占用 5173 端口（开发服务器）的进程
-lsof -ti:5173
-
-# 查找占用 4173 端口（预览服务器）的进程
-lsof -ti:4173
-
-# 停止开发服务器
-kill $(lsof -ti:5173)
-
-# 停止预览服务器
-kill $(lsof -ti:4173)
-```
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
 ## React Compiler
 
@@ -121,3 +75,4 @@ export default defineConfig([
   },
 ])
 ```
+>>>>>>> bfec3f9 (Initial commit: Electronic score reader application)

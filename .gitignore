@@ -35,9 +35,7 @@ dist-ssr
 Thumbs.db
 
 # Docker images
-elec-score.tar
-elec-score-synology.tar
-elec-score-amd64.tar
+*.tar
 
-# Server data
+# Data
 data/

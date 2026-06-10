@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import type { ScoreMeta } from '../types/score';
-import { loadScoreMetas, loadScoreMetasSync, addScore, deleteScore } from '../utils/storage';
+import { loadScoreMetas, addScore, deleteScore } from '../utils/storage';
 import PdfImporter, { type PdfImporterHandle } from './PdfImporter';
 import './ScoreLibrary.css';
 
@@ -9,23 +9,10 @@ interface ScoreLibraryProps {
 }
 
 export default function ScoreLibrary({ onOpenScore }: ScoreLibraryProps) {
-  const [scores, setScores] = useState<ScoreMeta[]>(() => loadScoreMetasSync());
-  const [, setLoading] = useState(true);
+  const [scores, setScores] = useState<ScoreMeta[]>(() => loadScoreMetas());
   const [errorMsg, setErrorMsg] = useState('');
   const [importing, setImporting] = useState(false);
   const importerRef = useRef<PdfImporterHandle>(null);
-
-  // 从 API 加载乐谱列表
-  useEffect(() => {
-    let cancelled = false;
-    loadScoreMetas().then((metas) => {
-      if (!cancelled) {
-        setScores(metas);
-        setLoading(false);
-      }
-    });
-    return () => { cancelled = true; };
-  }, []);
 
   // 处理导入成功
   const handleImport = async (id: string, name: string, pdfData: string, thumbnail: string, pageCount: number, fileSize: number) => {
