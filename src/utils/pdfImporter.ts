@@ -2,11 +2,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import type { Score } from '../types/score';
 import { v4 as uuidv4 } from 'uuid';
 
-// 设置 PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.mjs',
-  import.meta.url
-).toString();
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 
 /**
  * 读取文件为 ArrayBuffer
