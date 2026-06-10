@@ -73,6 +73,7 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
 
   // 自动翻页 Hook
   const autoPageTurn = useAutoPageTurn({
+    scoreId: score.id,
     totalPages: score.pageCount,
     onTurnPage: (page) => {
       renderPage(page);
