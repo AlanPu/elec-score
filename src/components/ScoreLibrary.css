@@ -44,7 +44,7 @@
 .score-library-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--text-h, #08060d);
+  color: var(--color-text-primary, #08060d);
   margin: 0;
   letter-spacing: -0.5px;
 }
