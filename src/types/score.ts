@@ -41,6 +41,27 @@ export const SPEED_PRESET_LABELS: Record<SpeedPreset, string> = {
   [SpeedPreset.Fast]: '快速',
 };
 
+// 乐谱翻页设置（存服务端 + localStorage 缓存）
+export interface ScoreSettings {
+  pageTurnMode: PageTurnMode;
+  timeInterval: number;
+  bpm: number;
+  measuresPerPage: number;
+  beatsPerMeasure: number;
+  speedPreset: SpeedPreset;
+  measuresPerPageMap: Record<number, number>;
+}
+
+export const DEFAULT_SCORE_SETTINGS: ScoreSettings = {
+  pageTurnMode: PageTurnMode.Time,
+  timeInterval: 30,
+  bpm: 120,
+  measuresPerPage: 4,
+  beatsPerMeasure: 4,
+  speedPreset: SpeedPreset.Medium,
+  measuresPerPageMap: {},
+};
+
 export const PAGE_TURN_MODE_LABELS: Record<PageTurnMode, string> = {
   [PageTurnMode.Time]: '按时间',
   [PageTurnMode.Beat]: '按节拍',
