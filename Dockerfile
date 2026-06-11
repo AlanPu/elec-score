@@ -1,8 +1,8 @@
 FROM node:alpine
 
-# 安装 nginx
-RUN apk add --no-cache nginx && \
-    sed -i 's/application\/javascript js;/application\/javascript js mjs;/' /etc/nginx/mime.types
+# 安装 nginx（使用镜像源解决 TLS 问题）
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk add --no-cache nginx
 
 # 复制前端构建产物
 COPY dist /usr/share/nginx/html

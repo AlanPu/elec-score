@@ -1,9 +1,8 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Score } from '../types/score';
 import { v4 as uuidv4 } from 'uuid';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 
 /**
  * 读取文件为 ArrayBuffer
