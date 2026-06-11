@@ -272,6 +272,52 @@ export default function ScoreReader({ score, onBack }: ScoreReaderProps) {
     };
   }, []);
 
+  // 单指左右滑动翻页（缩放 = 1 时）
+  useEffect(() => {
+    const SWIPE_THRESHOLD = 50;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1 || scaleRef.current > 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isSwiping = true;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isSwiping || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dy) > Math.abs(dx)) {
+        isSwiping = false;
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!isSwiping) return;
+      isSwiping = false;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) >= SWIPE_THRESHOLD) {
+        if (dx < 0) {
+          autoPageTurn.goToNextPage();
+        } else {
+          autoPageTurn.goToPreviousPage();
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [autoPageTurn.goToNextPage, autoPageTurn.goToPreviousPage]);
+
   if (loading) {
     return (
       <div style={{
